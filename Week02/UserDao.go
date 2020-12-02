@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	e "github.com/pkg/errors"
 	_ "github.com/siddontang/go-mysql/driver"
 )
@@ -25,7 +26,8 @@ func (d *UserDao) GetNameById(id int) (string, error) {
 	err := db.QueryRow("select `name` from "+_table+" where id = ?", id).Scan(&name)
 	// 这里判断找不到记录错误进行一次转换
 	if e.Is(err, sql.ErrNoRows) {
-		return name, ErrDbNothing
+		return name, e.Wrap(ErrDbNothing, fmt.Sprintf("id %s", id))
 	}
+
 	return name, nil
 }
